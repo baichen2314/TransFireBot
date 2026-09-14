@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using PKHeX.Core;
 using SysBot.Base;
@@ -40,6 +40,15 @@ namespace SysBot.Pokemon
         }
 
         protected bool IsValidTrainerData() => GameLang is (> 0 and <= LanguageID.ChineseT) && InGameName.Length > 0 && Version > 0;
+
+        public string GetSpeciesName(ushort species)
+        {
+            var strings = GameInfo.GetStrings("en");
+            var speciesName = strings.Species;
+            if (species == 0 || species >= speciesName.Count)
+                return "Unknown";
+            return strings.Species[species];
+        }
 
         public override void SoftStop() => Config.Pause();
 

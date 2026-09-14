@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Collections.Generic;
@@ -218,7 +218,7 @@ namespace SysBot.Pokemon
                 var priority = sudo ? PokeTradePriorities.Tier1 : PokeTradePriorities.TierFree;
                 var queue = Hub.Queues.GetQueue(trade.Type);
 
-                queue.Enqueue(trade.Trade, priorities);
+                queue.Enqueue(trade.Trade, priority);
                 UsersInQueue.Add(trade);
 
                 trade.Trade.Notifier.OnFinish = _ => Remove(trade);

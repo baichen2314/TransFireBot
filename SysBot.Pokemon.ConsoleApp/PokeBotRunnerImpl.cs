@@ -1,5 +1,6 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 
+using SysBot.Pokemon.Kook;
 using SysBot.Pokemon.QQ;
 
 namespace SysBot.Pokemon.ConsoleApp
@@ -12,21 +13,16 @@ namespace SysBot.Pokemon.ConsoleApp
         public PokeBotRunnerImpl(PokeTradeHub<T> hub, BotFactory<T> fac) : base(hub, fac) { }
         public PokeBotRunnerImpl(PokeTradeHubConfig config, BotFactory<T> fac) : base(config, fac) { }
 
-       
         private MiraiQQBot<T>? QQ;
- 
+        private KookBot<T>? Kook;
 
         protected override void AddIntegrations()
         {
-            
             //add qq bot
             AddQQBot(Hub.Config.QQ);
-           
+            //add kook bot
+            AddKookBot(Hub.Config.Kook);
         }
-
-       
-
-      
 
         private void AddQQBot(QQSettings config)
         {
@@ -37,6 +33,11 @@ namespace SysBot.Pokemon.ConsoleApp
             QQ = new MiraiQQBot<T>(config, Hub);
         }
 
-      
+        private void AddKookBot(KookSettings config)
+        {
+            if (string.IsNullOrWhiteSpace(config.Token)) return;
+            if (Kook != null) return;
+            Kook = new KookBot<T>(config, Hub);
+        }
     }
 }

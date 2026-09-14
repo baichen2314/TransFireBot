@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -185,7 +185,7 @@ namespace SysBot.Pokemon
             for (var mark = RibbonIndex.MarkLunchtime; mark <= RibbonIndex.MarkSlump; mark++)
             {
                 if (pk.GetRibbon((int)mark))
-                    return RibbonStrings.GetName($"Ribbon{mark}");
+                    return GameInfo.Strings.Ribbons.GetName($"Ribbon{mark}");
             }
             return "";
         }

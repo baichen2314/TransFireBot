@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SysBot.Pokemon
 {
@@ -29,6 +29,9 @@ namespace SysBot.Pokemon
             {"帕底亚火炽种","Paldea-Blaze"},
             {"帕底亚水澜种","Paldea-Aqua"},
             {"刺刺耳","Spiky-eared"},
+            {"帕底亚的样子（火）","Paldea-Blaze"},
+            {"帕底亚的样子（水）","Paldea-Aqua"},
+            {"帕底亚的样子（格斗）","Paldea-Combat"},
             {"帕底亚","Paldea"},
             {"B","B"},
             {"C","C"},

@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.IO;
@@ -60,7 +60,9 @@ namespace SysBot.Pokemon
             }
 
             pkm.ResetPartyStats();
-            await SwitchConnection.WriteBytesAbsoluteAsync(pkm.EncryptedBoxData, offset, token).ConfigureAwait(false);
+            Span<byte> data = stackalloc byte[pkm.SIZE_STORED];
+            pkm.WriteEncryptedDataStored(data);
+            await SwitchConnection.WriteBytesAbsoluteAsync(data.ToArray(), offset, token).ConfigureAwait(false);
         }
 
         public async Task SetCurrentBox(byte box, CancellationToken token)
@@ -279,7 +281,9 @@ namespace SysBot.Pokemon
         public async Task SetBoxPokemonEgg(PK9 pkm, ulong ofs, CancellationToken token)
         {
             pkm.ResetPartyStats();
-            await SwitchConnection.WriteBytesAbsoluteAsync(pkm.EncryptedPartyData, ofs, token).ConfigureAwait(false);
+            Span<byte> data = stackalloc byte[pkm.SIZE_PARTY];
+            pkm.WriteEncryptedDataParty(data);
+            await SwitchConnection.WriteBytesAbsoluteAsync(data.ToArray(), ofs, token).ConfigureAwait(false);
         }
 
         public async Task SVSaveGameOverworld(CancellationToken token)
@@ -565,7 +569,7 @@ namespace SysBot.Pokemon
             string nature = $"{(Nature)pk.Nature}";
             string genderSymbol = pk.Gender == 0 ? "♂" : pk.Gender == 1 ? "♀" : "⚥";
             string genderText = $"{(Gender)pk.Gender}";
-            string ability = $"{GameInfo.GetStrings(1).Ability[pk.Ability]}";
+            string ability = $"{GameInfo.GetStrings("zh-Hans").Ability[pk.Ability]}";
 
             if (pk.IV_HP == 31 && pk.IV_ATK == 31 && pk.IV_DEF == 31 && pk.IV_SPA == 31 && pk.IV_SPD == 31 && pk.IV_SPE == 31)
                 MaxIV = "6IV";

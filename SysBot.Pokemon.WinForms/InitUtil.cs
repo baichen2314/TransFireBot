@@ -14,6 +14,7 @@ namespace SysBot.Pokemon.WinForms
                 ProgramMode.BDSP => new SAV8BS(),
                 ProgramMode.LA   => new SAV8LA(),
                 ProgramMode.SV   => new SAV9SV(),
+                ProgramMode.LZA  => new SAV9ZA(),
                 _                => throw new System.ArgumentOutOfRangeException(nameof(mode)),
             };
 

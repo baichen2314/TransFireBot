@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -56,7 +56,9 @@ namespace SysBot.Pokemon
             }
 
             pkm.ResetPartyStats();
-            await SwitchConnection.WriteBytesAbsoluteAsync(pkm.EncryptedPartyData, offset, token).ConfigureAwait(false);
+            Span<byte> data = stackalloc byte[pkm.SIZE_PARTY];
+            pkm.WriteEncryptedDataParty(data);
+            await SwitchConnection.WriteBytesAbsoluteAsync(data.ToArray(), offset, token).ConfigureAwait(false);
         }
 
         public async Task<SAV8BS> IdentifyTrainer(CancellationToken token)

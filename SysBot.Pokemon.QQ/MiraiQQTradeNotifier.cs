@@ -1,8 +1,9 @@
-﻿using Mirai.Net.Sessions.Http.Managers;
+using Mirai.Net.Sessions.Http.Managers;
 using PKHeX.Core;
 using SysBot.Base;
 using SysBot.Pokemon;
 using System;
+using System.Threading.Tasks;
 using System.Linq;
 using Mirai.Net.Data.Messages;
 using Mirai.Net.Data.Messages.Concretes;
@@ -40,7 +41,7 @@ namespace SysBot.Pokemon.QQ
         /// <summary>
         /// 详情记录
         /// </summary>
-        public void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, string message)
+        public async Task SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, string message)
         {
             LogUtil.LogText(message);
             //SendMessage($"@{info.Trainer.TrainerName}: {message}");
@@ -48,7 +49,7 @@ namespace SysBot.Pokemon.QQ
         /// <summary>
         /// 详情记录
         /// </summary>
-        public void SendNotification(PokeRoutineExecutor<T> routine, string message)
+        public async Task SendNotification(PokeRoutineExecutor<T> routine, string message)
         {
             LogUtil.LogText(message);
             //SendMessage($"@{info.Trainer.TrainerName}: {message}");
@@ -57,7 +58,7 @@ namespace SysBot.Pokemon.QQ
         /// <summary>
         /// 取消交换
         /// </summary>
-        public void TradeCanceled(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeResult msg)
+        public async Task TradeCanceled(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeResult msg)
         {
             OnFinish?.Invoke(routine);
             var line = $"@{info.Trainer.TrainerName}: 交换取消, {msg}";
@@ -67,7 +68,7 @@ namespace SysBot.Pokemon.QQ
         /// <summary>
         /// 完成交换
         /// </summary>
-        public void TradeFinished(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, T result)
+        public async Task TradeFinished(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, T result)
         {
             OnFinish?.Invoke(routine);
             var gender = result.OriginalTrainerGender == 0 ? "男" : "女";
@@ -148,7 +149,7 @@ namespace SysBot.Pokemon.QQ
         /// <summary>
         /// 初始化并发送交换密码
         /// </summary>
-        public void TradeInitialize(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
+        public async Task TradeInitialize(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
         {
             var receive = Data.Species == 0 ? string.Empty : $" ({Data.Nickname})";
             var msg =
@@ -224,7 +225,7 @@ namespace SysBot.Pokemon.QQ
         /// <summary>
         /// 寻找交换对象
         /// </summary>
-        public void TradeSearching(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
+        public async Task TradeSearching(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
         {
             var name = Info.TrainerName;
             var trainer = string.IsNullOrEmpty(name) ? string.Empty : $", @{name}";
@@ -236,7 +237,7 @@ namespace SysBot.Pokemon.QQ
         /// <summary>
         /// 详情记录
         /// </summary>
-        public void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeSummary message)
+        public async Task SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeSummary message)
         {
             var msg = message.Summary;
             if (message.Details.Count > 0)
@@ -247,7 +248,7 @@ namespace SysBot.Pokemon.QQ
         /// <summary>
         /// 详情记录以及蛋信息的发送
         /// </summary>
-        public void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, T result, string message)
+        public async Task SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, T result, string message)
         {
             var msg = $"它的详情: {result.FileName}: " + message;
             LogUtil.LogText(msg);

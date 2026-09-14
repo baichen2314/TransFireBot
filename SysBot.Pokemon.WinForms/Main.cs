@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using PKHeX.Core;
 using SysBot.Base;
 using System;
@@ -61,6 +61,7 @@ namespace SysBot.Pokemon.WinForms
             ProgramMode.BDSP => new PokeBotRunnerImpl<PB8>(cfg.Hub, new BotFactory8BS()),
             ProgramMode.LA => new PokeBotRunnerImpl<PA8>(cfg.Hub, new BotFactory8LA()),
             ProgramMode.SV => new PokeBotRunnerImpl<PK9>(cfg.Hub, new BotFactory9SV()),
+            ProgramMode.LZA => new PokeBotRunnerImpl<PA9>(cfg.Hub, new BotFactory9LZA()),
             _ => throw new IndexOutOfRangeException("Unsupported mode."),
         };
 

@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Collections.Generic;
@@ -52,7 +52,9 @@ namespace SysBot.Pokemon
             }
             var ofs = GetBoxSlotOffset(box, slot);
             pkm.ResetPartyStats();
-            await Connection.WriteBytesAsync(pkm.EncryptedPartyData, ofs, token).ConfigureAwait(false);
+            Span<byte> data = stackalloc byte[pkm.SIZE_PARTY];
+            pkm.WriteEncryptedDataParty(data);
+            await Connection.WriteBytesAsync(data.ToArray(), ofs, token).ConfigureAwait(false);
         }
 
         public override async Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)

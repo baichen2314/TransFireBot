@@ -1,4 +1,4 @@
-﻿using SysBot.Base;
+using SysBot.Base;
 
 namespace SysBot.Pokemon
 {
@@ -15,5 +15,6 @@ namespace SysBot.Pokemon
         BDSP = 2,
         LA = 3,
         SV = 4,
+        LZA = 5,
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using PKHeX.Core;
 using PKHeX.Core.AutoMod;
@@ -21,7 +21,6 @@ namespace SysBot.Pokemon
 
         private static void InitializeAutoLegality(LegalitySettings cfg)
         {
-            InitializeCoreStrings();
             EncounterEvent.RefreshMGDB(cfg.MGDBPath);
             InitializeTrainerDatabase(cfg);
             InitializeSettings(cfg);
@@ -41,8 +40,6 @@ namespace SysBot.Pokemon
             APILegality.UseMarkings = cfg.UseMarkings;
             APILegality.AllowTrainerOverride = cfg.AllowTrainerDataOverride;
             APILegality.AllowBatchCommands = cfg.AllowBatchCommands;
-            APILegality.PrioritizeGame = cfg.PrioritizeGame;
-            APILegality.PrioritizeGameVersion= cfg.PrioritizeGameVersion;
             APILegality.SetBattleVersion = cfg.SetBattleVersion;
             APILegality.Timeout = cfg.Timeout;
 
@@ -51,7 +48,6 @@ namespace SysBot.Pokemon
             // As of February 2024, the default setting in PKHeX is Invalid for missing HOME trackers.
             // If the host wants to allow missing HOME trackers, we need to override the default setting.
             bool allowMissingHOME = !cfg.EnableHOMETrackerCheck;
-            APILegality.AllowHOMETransferGeneration = allowMissingHOME;
             if (allowMissingHOME)
                 settings.HOMETransfer.HOMETransferTrackerNotPresent = Severity.Fishy;
 
@@ -73,11 +69,13 @@ namespace SysBot.Pokemon
 
             // Seed the Trainer Database with enough fake save files so that we return a generation sensitive format when needed.
             var fallback = GetDefaultTrainer(cfg);
-            for (byte generation = 1; generation <= Latest.Generation; generation++)
+            for (var context = EntityContext.Gen1; context < EntityContext.MaxInvalid; context++)
             {
-                var versions = GameUtil.GetVersionsInGeneration(generation, Latest.Version);
+                if (context == EntityContext.SplitInvalid)
+                    continue;
+                var versions = GameUtil.GetVersionsInGeneration(context, Latest.Version);
                 foreach (var version in versions)
-                    RegisterIfNoneExist(fallback, generation, version);
+                    RegisterIfNoneExist(fallback, context.Generation, version);
             }
             // Manually register for LGP/E since Gen7 above will only register the 3DS versions.
             RegisterIfNoneExist(fallback, 7, GameVersion.GP);
@@ -110,19 +108,11 @@ namespace SysBot.Pokemon
                 OT = fallback.OT,
                 Generation = generation,
             };
-            var exist = TrainerSettings.GetSavedTrainerData(version, generation, fallback);
+            var exist = TrainerSettings.GetSavedTrainerData((EntityContext)generation, version, fallback);
             if (exist is SimpleTrainerInfo) // not anything from files; this assumes ALM returns SimpleTrainerInfo for non-user-provided fake templates.
                 TrainerSettings.Register(fallback);
         }
 
-        private static void InitializeCoreStrings()
-        {
-            var lang = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName[..2];
-            LocalizationUtil.SetLocalization(typeof(LegalityCheckStrings), lang);
-            LocalizationUtil.SetLocalization(typeof(MessageStrings), lang);
-            RibbonStrings.ResetDictionary(GameInfo.Strings.ribbons);
-            ParseSettings.ChangeLocalizationStrings(GameInfo.Strings.movelist, GameInfo.Strings.specieslist);
-        }
 
         public static bool CanBeTraded(this PKM pkm)
         {
@@ -152,18 +142,19 @@ namespace SysBot.Pokemon
         public static ITrainerInfo GetTrainerInfo<T>() where T : PKM, new()
         {
             if (typeof(T) == typeof(PK8))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.SWSH, 8);
+                return TrainerSettings.GetSavedTrainerData(GameVersion.SWSH);
             if (typeof(T) == typeof(PB8))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.BDSP, 8);
+                return TrainerSettings.GetSavedTrainerData(GameVersion.BDSP);
             if (typeof(T) == typeof(PA8))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.PLA, 8);
+                return TrainerSettings.GetSavedTrainerData(GameVersion.PLA);
             if (typeof(T) == typeof(PK9))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.SV, 9);
+                return TrainerSettings.GetSavedTrainerData(GameVersion.SV);
+            if (typeof(T) == typeof(PA9))
+                return TrainerSettings.GetSavedTrainerData(GameVersion.ZA);
 
             throw new ArgumentException("Type does not have a recognized trainer fetch.", typeof(T).Name);
         }
 
-        public static ITrainerInfo GetTrainerInfo(byte gen) => TrainerSettings.GetSavedTrainerData(gen);
 
         public static PKM GetLegal(this ITrainerInfo sav, IBattleTemplate set, out string res)
         {

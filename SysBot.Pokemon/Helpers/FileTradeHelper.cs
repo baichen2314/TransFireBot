@@ -1,4 +1,4 @@
-﻿using MathNet.Numerics.LinearAlgebra.Factorization;
+using MathNet.Numerics.LinearAlgebra.Factorization;
 using PKHeX.Core;
 using SysBot.Base;
 using System;
@@ -24,6 +24,7 @@ namespace SysBot.Pokemon.Helpers
             Type pkm when pkm == typeof(PB8) => new PB8(data),
             Type pkm when pkm == typeof(PA8) => new PA8(data),
             Type pkm when pkm == typeof(PK9) => new PK9(data),
+            Type pkm when pkm == typeof(PA9) => new PA9(data),
             _ => null
         };
         /// <summary>
@@ -34,7 +35,8 @@ namespace SysBot.Pokemon.Helpers
             { typeof(PK8), 344 },
             { typeof(PB8), 344 },
             { typeof(PA8), 376 },
-            { typeof(PK9), 344 }
+            { typeof(PK9), 344 },
+            { typeof(PA9), 344 }
         };
         /// <summary>
         ///对应版本的Bin文件中存储一个宝可梦数据所需要的字节大小
@@ -44,7 +46,8 @@ namespace SysBot.Pokemon.Helpers
             { typeof(PK8), 344 },
             { typeof(PB8), 344 },
             { typeof(PA8), 360 },
-            { typeof(PK9), 344 }
+            { typeof(PK9), 344 },
+            { typeof(PA9), 344 }
         };
         /// <summary>
         /// 对应版本的Bin文件中可存储的最大宝可梦数量
@@ -54,7 +57,8 @@ namespace SysBot.Pokemon.Helpers
             { typeof(PK8), 960 },
             { typeof(PB8), 1200 },
             { typeof(PA8), 960 },
-            { typeof(PK9), 960 }
+            { typeof(PK9), 960 },
+            { typeof(PA9), 960 }
         };
 
         /// <summary>

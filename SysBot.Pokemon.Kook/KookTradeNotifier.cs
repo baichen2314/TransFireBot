@@ -1,45 +1,43 @@
 using PKHeX.Core;
 using SysBot.Base;
-using SysBot.Pokemon;
 using System;
-using System.Threading.Tasks;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
+using System.Threading.Tasks;
 
-namespace SysBot.Pokemon.Dodo
+namespace SysBot.Pokemon.Kook
 {
-    public class DodoTradeNotifier<T> : IPokeTradeNotifier<T> where T : PKM, new()
+    /// <summary>
+    /// Kook 交易通知器(移植自 Dodo 平台的 DodoTradeNotifier)
+    /// </summary>
+    public class KookTradeNotifier<T> : IPokeTradeNotifier<T> where T : PKM, new()
     {
         private T Data { get; }
         private PokeTradeTrainerInfo Info { get; }
         private int Code { get; }
         private string Username { get; }
+        private ulong ChannelId { get; }
 
-        private string ChannelId { get; }
-
-        private string IslandId { get; }
-
-        public DodoTradeNotifier(T data, PokeTradeTrainerInfo info, int code, string username, string channelId, string islandid)
+        public KookTradeNotifier(T data, PokeTradeTrainerInfo info, int code, string username, ulong channelId)
         {
             Data = data;
             Info = info;
             Code = code;
             Username = username;
             ChannelId = channelId;
-            IslandId = islandid;
             LogUtil.LogText($"创建交易细节: {Username} - {Code}");
         }
 
-        public Action<PokeRoutineExecutor<T>> OnFinish { private get; set; }
+        public Action<PokeRoutineExecutor<T>>? OnFinish { private get; set; }
 
         public async Task SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, string message)
         {
             if (message.Contains("发现连接交换对象:"))
             {
-                Regex regex = new Regex("TID: (\\d+)");
+                var regex = new Regex("TID: (\\d+)");
                 string tid = regex.Match(message).Groups[1].ToString();
                 regex = new Regex("SID: (\\d+)");
                 string sid = regex.Match(message).Groups[1].ToString();
@@ -47,40 +45,38 @@ namespace SysBot.Pokemon.Dodo
                 if (m1.Length > 1)
                 {
                     var m2 = m1[1].Split('.');
-                    if (m2 != null)
-                        DodoBot<T>.SendPersonalMessage(info.Trainer.ID.ToString(), $"找到你了{m2[0]}，你本人的表ID:{tid},里ID:{sid}", IslandId);
+                    if (m2.Length > 0)
+                        await KookBot<T>.SendPersonalMessage(info.Trainer.ID, $"找到你了{m2[0]}，你本人的表ID:{tid},里ID:{sid}");
                 }
-
             }
             else if (message.StartsWith("批量"))
             {
-                DodoBot<T>.SendChannelMessage(message, ChannelId);
+                await KookBot<T>.SendChannelMessage(message, ChannelId);
             }
             else if (CheckWretchName(message))
             {
-                DodoBot<T>.SendChannelMessage("**大队长与狗不能进行交换，你家主是不会开机器人吗？** \n **自古忠孝两难全，队长一人成两全**", ChannelId);
+                await KookBot<T>.SendChannelMessage("**大队长与狗不能进行交换，你家主是不会开机器人吗？** \n **自古忠孝两难全，队长一人成两全**", ChannelId);
             }
             else if (message.StartsWith("该模板"))
             {
-                DodoBot<T>.SendChannelMessage(message, ChannelId);
+                await KookBot<T>.SendChannelMessage(message, ChannelId);
             }
             LogUtil.LogText(message);
         }
+
         public async Task TradeCanceled(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeResult msg)
         {
             string description = GetEnumDescription(msg);
             OnFinish?.Invoke(routine);
             var line = $"交换已取消, 取消原因:{description}";
             LogUtil.LogText(line);
-            DodoBot<T>.SendChannelAtMessage(info.Trainer.ID, line, ChannelId);
-            var n = DodoBot<T>.Info.Hub.Config.Queues.AlertNumber;
+            await KookBot<T>.SendChannelAtMessage(info.Trainer.ID, line, ChannelId);
+            var n = KookBot<T>.Info.Hub.Config.Queues.AlertNumber;
             for (int i = 1; i <= n; i++)
             {
-                var r = DodoBot<T>.Info.CheckIndex(i);
+                var r = KookBot<T>.Info.CheckIndex(i);
                 if (r != 0)
-                {
-                    DodoBot<T>.SendChannelAtMessage(r, $"请注意,你在第{i + 1}位,{i}个以后该到你了！\n", ChannelId);
-                }
+                    await KookBot<T>.SendChannelAtMessage(r, $"请注意,你在第{i + 1}位,{i}个以后该到你了！\n", ChannelId);
             }
         }
 
@@ -92,25 +88,23 @@ namespace SysBot.Pokemon.Dodo
                 ? $"完成。希望您能与您的{ShowdownTranslator<T>.GameStringsZh.Species[Data.Species]}玩的愉快!"
                 : "完成!");
             var text =
-                 $"我收到精灵的种类:{ShowdownTranslator<T>.GameStringsZh.Species[result.Species]}\n" +
-                 $"PID:{result.PID:X}\n" +
-                 $"加密常数:{result.EncryptionConstant:X}\n" +
-             $"训练家姓名:{result.OriginalTrainerName}\n" +
-             $"训练家性别:{(result.OriginalTrainerGender == 0 ? "男" : "女")}\n" +
-                 $"训练家表ID:{result.TrainerTID7}\n" +
-                 $"训练家里ID:{result.TrainerSID7}";
+                $"我收到精灵的种类:{ShowdownTranslator<T>.GameStringsZh.Species[result.Species]}\n" +
+                $"PID:{result.PID:X}\n" +
+                $"加密常数:{result.EncryptionConstant:X}\n" +
+                $"训练家姓名:{result.OriginalTrainerName}\n" +
+                $"训练家性别:{(result.OriginalTrainerGender == 0 ? "男" : "女")}\n" +
+                $"训练家表ID:{result.TrainerTID7}\n" +
+                $"训练家里ID:{result.TrainerSID7}";
             LogUtil.LogText(message);
             RecordUtil<PokeTradeBotSWSH>.Record($"交换完成\t交换对象:{info.Trainer.TrainerName}\t队列号:{info.ID}\t宝可梦:{ShowdownTranslator<T>.GameStringsZh.Species[Data.Species]}\t");
-            DodoBot<T>.SendChannelAtMessage(info.Trainer.ID, message, ChannelId);
-            DodoBot<T>.SendPersonalMessage(info.Trainer.ID.ToString(), text, IslandId);
-            var n = DodoBot<T>.Info.Hub.Config.Queues.AlertNumber;
+            await KookBot<T>.SendChannelAtMessage(info.Trainer.ID, message, ChannelId);
+            await KookBot<T>.SendPersonalMessage(info.Trainer.ID, text);
+            var n = KookBot<T>.Info.Hub.Config.Queues.AlertNumber;
             for (int i = 1; i <= n; i++)
             {
-                var r = DodoBot<T>.Info.CheckIndex(i);
+                var r = KookBot<T>.Info.CheckIndex(i);
                 if (r != 0)
-                {
-                    DodoBot<T>.SendChannelAtMessage(r, $"请注意,你在第{i + 1}位,{i}个以后该到你了！\n", ChannelId);
-                }
+                    await KookBot<T>.SendChannelAtMessage(r, $"请注意,你在第{i + 1}位,{i}个以后该到你了！\n", ChannelId);
             }
         }
 
@@ -122,21 +116,20 @@ namespace SysBot.Pokemon.Dodo
             msg += $" 交易密码为: {info.Code:0000 0000}";
             LogUtil.LogText(msg);
             var text = $"队列号:**{info.ID}**\n正在派送:**{ShowdownTranslator<T>.GameStringsZh.Species[Data.Species]}**\n密码:见私信\n状态:初始化\n请准备好\n";
-            DodoBot<T>.SendChannelAtMessage(info.Trainer.ID, text, ChannelId);
-            DodoBot<T>.SendPersonalMessage(info.Trainer.ID.ToString(),
-                $"正在派送:{ShowdownTranslator<T>.GameStringsZh.Species[Data.Species]}\n您的密码:{info.Code:0000 0000}\n{routine.InGameName}正在派送", IslandId);
+            await KookBot<T>.SendChannelAtMessage(info.Trainer.ID, text, ChannelId);
+            await KookBot<T>.SendPersonalMessage(info.Trainer.ID,
+                $"正在派送:{ShowdownTranslator<T>.GameStringsZh.Species[Data.Species]}\n您的密码:{info.Code:0000 0000}\n{routine.InGameName}正在派送");
         }
 
         public async Task TradeSearching(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
         {
             var name = Info.TrainerName;
-            var trainer = string.IsNullOrEmpty(name) ? string.Empty : $", @{name}";
             var message = $"正在等待{name}!,机器人IGN为{routine.InGameName}.";
             message += $" 交换密码为: {info.Code:0000 0000}";
             LogUtil.LogText(message);
             var text = $"我正在等你,第{info.ID}号\n我的游戏ID为{routine.InGameName}\n正在派送:**{ShowdownTranslator<T>.GameStringsZh.Species[Data.Species]}**\n密码:**见私信**\n状态:搜索中\n";
-            DodoBot<T>.SendChannelAtMessage(info.Trainer.ID, text, ChannelId);
-            DodoBot<T>.SendPersonalMessage(info.Trainer.ID.ToString(), $"我正在等你,{name}\n密码:{info.Code:0000 0000}\n请速来领取", IslandId);
+            await KookBot<T>.SendChannelAtMessage(info.Trainer.ID, text, ChannelId);
+            await KookBot<T>.SendPersonalMessage(info.Trainer.ID, $"我正在等你,{name}\n密码:{info.Code:0000 0000}\n请速来领取");
         }
 
         public async Task SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeSummary message)
@@ -145,6 +138,7 @@ namespace SysBot.Pokemon.Dodo
             if (message.Details.Count > 0)
                 msg += ", " + string.Join(", ", message.Details.Select(z => $"{z.Heading}: {z.Detail}"));
             LogUtil.LogText(msg);
+            await Task.CompletedTask;
         }
 
         public async Task SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, T result, string message)
@@ -183,46 +177,48 @@ namespace SysBot.Pokemon.Dodo
                         $"个体值:{result.IV_HP},{result.IV_ATK},{result.IV_DEF},{result.IV_SPA},{result.IV_SPD},{result.IV_SPE}" + IVstring + "\n" +
                         $"特性:{Abilitystring}\n" +
                         $"闪光:{(result.IsShiny ? "闪了闪了闪了闪了闪了闪了" : "否")}";
-                        
-                    var dodoId =ulong.Parse(DodoBot<T>.Info.Hub.Config.Dodo.ClientId);
-                    DodoHelper <T> dodoHelper = new DodoHelper<T>(dodoId,Username,ChannelId, IslandId);
-                    var eggMsg = dodoHelper.CardInfo(result, out string pokeurl, out string itemurl, out string ballurl, out string teraurl, out string teraoriginurl, out string shinyurl, out string movetypeurl1, out string movetypeurl2, out string movetypeurl3, out string movetypeurl4);
+
+                    var kookHelper = new KookHelper<T>(info.Trainer.ID, Username, ChannelId);
+                    var eggMsg = kookHelper.CardInfo(result, out string pokeurl, out string itemurl, out string ballurl, out string teraurl, out string teraoriginurl, out string shinyurl, out string movetypeurl1, out string movetypeurl2, out string movetypeurl3, out string movetypeurl4);
                     string shinyinfo = $"闪光:{(result.IsShiny ? "**!!!闪了!!!闪了!!!**" : "否")}";
-                    if (!DodoBot<T>.Info.Hub.Config.Dodo.CardTradeMessage)
-                        DodoBot<T>.SendChannelMessage(text, ChannelId);
+                    if (!KookBot<T>.Info.Hub.Config.Kook.CardTradeMessage)
+                        await KookBot<T>.SendChannelMessage(text, ChannelId);
                     else
-                    {
-                        DodoBot<T>.SendChannelEggCardMessage(message,eggMsg, ChannelId, pokeurl, ballurl, shinyurl, shinyinfo);
-                    }
+                        await KookBot<T>.SendChannelEggCardMessage(message, eggMsg, ChannelId, pokeurl, ballurl, shinyurl, shinyinfo);
                 }
             }
             else if (message.Contains("https"))
             {
-                DodoBot<T>.SendPersonalMessagePicture(message, info.Trainer.ID.ToString(), IslandId);
+                await KookBot<T>.SendPersonalMessagePicture(message, info.Trainer.ID);
             }
-
+            else if (message.Contains("Here's what you showed me!"))
+            {
+                // ZA 克隆模式: 将用户展示的宝可梦文件私发给用户
+                if (KookBot<T>.Info.Hub.Config.Kook.ReturnPKMs)
+                {
+                    Span<byte> data = stackalloc byte[result.SIZE_PARTY];
+                    result.WriteDecryptedDataParty(data);
+                    await KookBot<T>.SendPersonalFile(info.Trainer.ID, data.ToArray(), result.FileName);
+                }
+            }
         }
+
         public static string GetEnumDescription(Enum value)
         {
-            FieldInfo fi = value.GetType().GetField(value.ToString());
-            DescriptionAttribute[] attributes = fi.GetCustomAttributes(typeof(DescriptionAttribute), false) as DescriptionAttribute[];
-
+            FieldInfo? fi = value.GetType().GetField(value.ToString());
+            DescriptionAttribute[]? attributes = fi?.GetCustomAttributes(typeof(DescriptionAttribute), false) as DescriptionAttribute[];
             if (attributes != null && attributes.Any())
-            {
                 return attributes.First().Description;
-            }
-
             return value.ToString();
         }
+
         public bool CheckWretchName(string message)
         {
             string[] banTradeName = { "大队长", "DDZ", "Ddz", "DDz", "dDz", "dDZ", "ddz", "ddZ", "叫我大队长", "我是大队长", "忘世麒麟", "叫我大隊長", "我是大隊長", "大隊長" };
             foreach (var itemName in banTradeName)
             {
                 if (message.StartsWith(itemName))
-                {
                     return true;
-                }
             }
             return false;
         }

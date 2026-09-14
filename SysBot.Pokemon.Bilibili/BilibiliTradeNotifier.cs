@@ -1,7 +1,8 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using SysBot.Pokemon;
 using System;
+using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 
@@ -25,12 +26,12 @@ namespace SysBot.Pokemon.Bilibili
 
         public Action<PokeRoutineExecutor<T>>? OnFinish { private get; set; }
 
-        public void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, string message)
+        public async Task SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, string message)
         {
             LogUtil.LogText(message);
         }
 
-        public void TradeCanceled(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeResult msg)
+        public async Task TradeCanceled(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeResult msg)
         {
             OnFinish?.Invoke(routine);
             var line = $"@{info.Trainer.TrainerName}: Trade canceled, {msg}";
@@ -38,7 +39,7 @@ namespace SysBot.Pokemon.Bilibili
             File.WriteAllText(@"msg.txt", $"等待命令");
         }
 
-        public void TradeFinished(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, T result)
+        public async Task TradeFinished(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, T result)
         {
             OnFinish?.Invoke(routine);
             var tradedToUser = Data.Species;
@@ -49,7 +50,7 @@ namespace SysBot.Pokemon.Bilibili
             File.WriteAllText(@"msg.txt", $"等待命令");
         }
 
-        public void TradeInitialize(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
+        public async Task TradeInitialize(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
         {
             var receive = Data.Species == 0 ? string.Empty : $" ({Data.Nickname})";
             var msg =
@@ -60,7 +61,7 @@ namespace SysBot.Pokemon.Bilibili
                 $"派送:{ShowdownTranslator<T>.GameStringsZh.Species[Data.Species]}\n密码:{info.Code:0000 0000}\n状态:初始化");
         }
 
-        public void TradeSearching(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
+        public async Task TradeSearching(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
         {
             var name = Info.TrainerName;
             var trainer = string.IsNullOrEmpty(name) ? string.Empty : $", @{name}";
@@ -71,7 +72,7 @@ namespace SysBot.Pokemon.Bilibili
                 $"派送:{ShowdownTranslator<T>.GameStringsZh.Species[Data.Species]}\n密码:{info.Code:0000 0000}\n状态:搜索中");
         }
 
-        public void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeSummary message)
+        public async Task SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeSummary message)
         {
             var msg = message.Summary;
             if (message.Details.Count > 0)
@@ -79,7 +80,7 @@ namespace SysBot.Pokemon.Bilibili
             LogUtil.LogText(msg);
         }
 
-        public void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, T result, string message)
+        public async Task SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, T result, string message)
         {
             var msg = $"Details for {result.FileName}: " + message;
             LogUtil.LogText(msg);

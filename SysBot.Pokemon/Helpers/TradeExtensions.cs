@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Globalization;
@@ -102,7 +102,6 @@ namespace SysBot.Pokemon
         {
             var dittoStats = new string[] { "atk", "spe", "spa" };
             var nickname = pkm.Nickname.ToLower();
-            pkm.StatNature = pkm.Nature;
             pkm.MetLocation = pkm switch
             {
                 PB8 => 400,
@@ -170,7 +169,6 @@ namespace SysBot.Pokemon
             pk.HandlingTrainerName = "";
             pk.HandlingTrainerFriendship = 0;
             pk.ClearMemories();
-            pk.StatNature = pk.Nature;
             pk.SetEVs(new int[] { 0, 0, 0, 0, 0, 0 });
 
             MarkingApplicator.SetMarkings(pk);

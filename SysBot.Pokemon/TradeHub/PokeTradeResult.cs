@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 namespace SysBot.Pokemon
 {
@@ -22,6 +22,8 @@ namespace SysBot.Pokemon
         IllegalTrade,
         [Description("可疑交换")]
         SuspiciousActivity,
+        [Description("不允许交换进化")]
+        TradeEvolveNotAllowed,
 
         // Recovery -- General Bot Failures.恢复——一般的机器人故障
         // Anything below here should be retried once if possible.如果可能，下面的代码都应该重试一次。

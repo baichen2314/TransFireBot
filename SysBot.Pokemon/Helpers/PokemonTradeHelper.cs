@@ -1,4 +1,4 @@
-﻿using NLog.Targets;
+using NLog.Targets;
 using PKHeX.Core;
 using SysBot.Base;
 using System;
@@ -115,7 +115,7 @@ namespace SysBot.Pokemon.Helpers
                 SendMessage(msg);
                 return;
             }
-            var cardflag = queueInfo.Hub.Config.Dodo.CardTradeMessage;
+            var cardflag = queueInfo.Hub.Config.Kook.CardTradeMessage;
             if (cardflag)
             {
                 var eggurl = GetEggUrl(pkm);
@@ -152,7 +152,7 @@ namespace SysBot.Pokemon.Helpers
                 SendMessage(msg);
                 return;
             }
-            var cardflag = queueInfo.Hub.Config.Dodo.CardTradeMessage;
+            var cardflag = queueInfo.Hub.Config.Kook.CardTradeMessage;
             if (cardflag)
             {
                 var eggurl = GetEggUrl(pkm);
@@ -241,7 +241,7 @@ namespace SysBot.Pokemon.Helpers
 
                 else
                 {
-                    var cardflag = queueInfo.Hub.Config.Dodo.CardTradeMessage;
+                    var cardflag = queueInfo.Hub.Config.Kook.CardTradeMessage;
                     if (cardflag)
                     {
                         var eggurl = GetEggUrl(rawPkms[i]);
@@ -342,7 +342,7 @@ namespace SysBot.Pokemon.Helpers
                 }
                 else
                 {
-                    var cardflag = queueInfo.Hub.Config.Dodo.CardTradeMessage;
+                    var cardflag = queueInfo.Hub.Config.Kook.CardTradeMessage;
                     if (cardflag)
                     {
                         var eggurl = GetEggUrl(pk);
@@ -388,6 +388,8 @@ namespace SysBot.Pokemon.Helpers
                 version = ".pa8";
             if (typeof(T) == typeof(PK9))
                 version = ".pk9";
+            if (typeof(T) == typeof(PA9))
+                version = ".pa9";
             return version;
         }
         /// <summary>
@@ -706,7 +708,7 @@ namespace SysBot.Pokemon.Helpers
 
             if (typeof(T) == typeof(PK8))
             {               
-                PK8? pks = FileTradeHelper<T>.GetPokemon(pk.Data) as PK8;
+                PK8? pks = FileTradeHelper<T>.GetPokemon(pk.Data.ToArray()) as PK8;
                 scale = "无";
                 if(pks.Tracker == 0)
                 {
@@ -717,7 +719,7 @@ namespace SysBot.Pokemon.Helpers
             }
             if (typeof(T) == typeof(PA8))
             {
-                PA8? pks = FileTradeHelper<T>.GetPokemon(pk.Data) as PA8;
+                PA8? pks = FileTradeHelper<T>.GetPokemon(pk.Data.ToArray()) as PA8;
                 scale = pks.Scale.ToString();
                 if (pks.Tracker == 0)
                 {
@@ -728,7 +730,7 @@ namespace SysBot.Pokemon.Helpers
             }
             if (typeof(T) == typeof(PB8))
             {
-                PB8? pks = FileTradeHelper<T>.GetPokemon(pk.Data) as PB8;
+                PB8? pks = FileTradeHelper<T>.GetPokemon(pk.Data.ToArray()) as PB8;
                 scale = "无";
                 if (pks.Tracker == 0)
                 {
@@ -739,7 +741,7 @@ namespace SysBot.Pokemon.Helpers
             }
             if (typeof(T) == typeof(PK9))
             {
-                PK9? pks = FileTradeHelper<T>.GetPokemon(pk.Data) as PK9;
+                PK9? pks = FileTradeHelper<T>.GetPokemon(pk.Data.ToArray()) as PK9;
                 tera=pks.TeraType.ToString();
                 teraoriginal = pks.TeraTypeOriginal.ToString();               
                 scale = pks.Scale.ToString();
@@ -774,7 +776,18 @@ namespace SysBot.Pokemon.Helpers
                 }
 
             }
-            //LogUtil.LogInfo($"itemimage:{itemurl}", nameof(PokemonTradeHelper<T>));
+            if (typeof(T) == typeof(PA9))
+            {
+                PA9? pks = FileTradeHelper<T>.GetPokemon(pk.Data.ToArray()) as PA9;
+                scale = pks.Scale.ToString();
+                if (pks.Tracker == 0)
+                {
+                    hometracker = "无追踪码";
+                }
+                else
+                    hometracker = "有追踪码";
+            }
+            //LogUtil.LogInfo("itemimage:{itemurl}", nameof(PokemonTradeHelper<T>));
             //LogUtil.LogInfo($"pkimage:{pokeurl}", nameof(PokemonTradeHelper<T>));
             //LogUtil.LogInfo($"ballimage:{ballurl}", nameof(PokemonTradeHelper<T>));
             pmsg = $"**昵称：{GameInfo.GetStrings("zh-Hans").Species[species]}**\n" +

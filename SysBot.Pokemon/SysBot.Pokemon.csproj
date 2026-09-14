@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <LangVersion>13</LangVersion>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14</LangVersion>
     <Nullable>enable</Nullable>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
@@ -17,15 +17,13 @@
     <PackageReference Include="KdSoft.FlatBuffers" Version="1.12.0" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="PKHeX.Core" Version="26.7.7" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SV\BotRaid\BanList\Resources\languages.json" />
     <EmbeddedResource Include="SV\BotRaid\BanList\Resources\substitutionTable.json" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="PKHeX.Core">
-      <HintPath>deps\PKHeX.Core.dll</HintPath>
-    </Reference>
     <Reference Include="PKHeX.Core.AutoMod">
       <HintPath>deps\PKHeX.Core.AutoMod.dll</HintPath>
     </Reference>

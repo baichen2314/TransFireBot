@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System.IO;
 using System.Threading;
@@ -66,8 +66,10 @@ namespace SysBot.Pokemon
                 return;
             var dir = Path.Combine(folder, subfolder);
             Directory.CreateDirectory(dir);
-            var fn = Path.Combine(dir, Util.CleanFileName(pk.FileName));
-            File.WriteAllBytes(fn, pk.DecryptedPartyData);
+            var fn = Path.Combine(dir, PathUtil.CleanFileName(pk.FileName));
+            Span<byte> data = stackalloc byte[pk.SIZE_PARTY];
+            pk.WriteDecryptedDataParty(data);
+            File.WriteAllBytes(fn, data);
             LogUtil.LogInfo($"已保存文件: {fn}", "Dump");
         }
 

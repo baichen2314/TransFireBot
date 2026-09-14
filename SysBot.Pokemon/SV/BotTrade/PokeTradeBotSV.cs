@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using PKHeX.Core;
 using PKHeX.Core.Searching;
 using SysBot.Base;
@@ -926,7 +926,7 @@ namespace SysBot.Pokemon
             var la = new LegalityAnalysis(offered);
             if (!la.Valid)
             {
-                Log($"克隆请求 (来自{poke.Trainer.TrainerName})的不合法宝可梦:{GameInfo.GetStrings(1).Species[offered.Species]}.");
+                Log($"克隆请求 (来自{poke.Trainer.TrainerName})的不合法宝可梦:{GameInfo.GetStrings("zh-Hans").Species[offered.Species]}.");
                 if (DumpSetting.Dump)
                     DumpPokemon(DumpSetting.DumpFolder, "hacked", offered);
 
@@ -942,8 +942,8 @@ namespace SysBot.Pokemon
             if (Hub.Config.Legality.ResetHOMETracker)
                 clone.Tracker = 0;
 
-            poke.SendNotification(this, $"**克隆了你的{GameInfo.GetStrings(1).Species[clone.Species]}!**\n现在按B取消你的交换申请，给我一只你不需要的宝可梦。");
-            Log($"克隆一个 {GameInfo.GetStrings(1).Species[clone.Species]}. 正在等待用户切换他们的宝可梦...");
+            poke.SendNotification(this, $"**克隆了你的{GameInfo.GetStrings("zh-Hans").Species[clone.Species]}!**\n现在按B取消你的交换申请，给我一只你不需要的宝可梦。");
+            Log($"克隆一个 {GameInfo.GetStrings("zh-Hans").Species[clone.Species]}. 正在等待用户切换他们的宝可梦...");
 
             // Separate this out from WaitForPokemonChanged since we compare to old EC from original read.
             var partnerFound = await ReadUntilChanged(TradePartnerOfferedOffset, oldEC, 15_000, 0_200, false, true, token).ConfigureAwait(false);
