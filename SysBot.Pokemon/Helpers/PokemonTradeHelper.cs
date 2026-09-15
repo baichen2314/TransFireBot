@@ -561,9 +561,9 @@ namespace SysBot.Pokemon.Helpers
         public string GetEggUrl(T pk)
         {
             var eggFag = pk.IsEgg;
-            string eggurl = "";
+            string eggurl = "https://img.kookapp.cn/attachments/2024-05/06/AIOJcopD4t03k03k.png";
             if (eggFag)
-                eggurl = "https://img.imdodo.com/openapitest/upload/cdn/E714716E359055F4AD802BD414A97AF2_1696061162810.png";
+                eggurl = "https://img.kookapp.cn/attachments/2024-05/06/AIOJcopD4t03k03k.png";
             return eggurl;
         }
         #region Card Information
@@ -581,11 +581,11 @@ namespace SysBot.Pokemon.Helpers
             int shinyInt = pk.IsShiny == true ? 1 : 0;
             if (shinyInt == 1)
             {
-                shinyurl = "https://img.imdodo.com/openapitest/upload/cdn/39240F8E02D5DB05A6686F2E34BACF23_1696445706494.png";
+                shinyurl = pk.ShinyXor == 0 ? "🔶" : "✨";
             }
             else
             {
-                shinyurl = "https://img.imdodo.com/openapitest/upload/cdn/4A47A0DB6E60853DEDFCFDF08A5CA249_1695595586219.png";
+                shinyurl = "";
             }
 
             var pokeball = pk.Ball;
@@ -605,8 +605,8 @@ namespace SysBot.Pokemon.Helpers
 
             string tera="";
             string teraoriginal = "";
-            teraurl = "https://img.imdodo.com/openapitest/upload/cdn/AEA3F842940BD2E6418AE36231F53BB7_1696061304099.png"; 
-            teraoriginurl = "https://img.imdodo.com/openapitest/upload/cdn/AEA3F842940BD2E6418AE36231F53BB7_1696061304099.png";
+            teraurl = "https://img.kookapp.cn/attachments/2025-05/16/jPrG2NK9KF01o01o.png"; 
+            teraoriginurl = "https://img.kookapp.cn/attachments/2025-05/16/jPrG2NK9KF01o01o.png";
             
             string hometracker = "";
             string scale ="";
@@ -650,7 +650,7 @@ namespace SysBot.Pokemon.Helpers
             {
                 LogUtil.LogInfo($"Ball: {pokeball} not found.", nameof(PokemonTradeHelper<T>));
                 
-               ballurl = "https://img.imdodo.com/openapitest/upload/cdn/AEA3F842940BD2E6418AE36231F53BB7_1696061304099.png";
+               ballurl = "https://img.kookapp.cn/attachments/2024-05/06/JdiY6GZKZm00k00k.png";
             }
             try
             {
@@ -661,7 +661,7 @@ namespace SysBot.Pokemon.Helpers
             {
                 LogUtil.LogInfo($"Item: {prop} not found.", nameof(PokemonTradeHelper<T>));
                 
-                itemurl = "https://img.imdodo.com/openapitest/upload/cdn/4A47A0DB6E60853DEDFCFDF08A5CA249_1695595586219.png";
+                itemurl = "https://img.kookapp.cn/attachments/2024-05/06/JdiY6GZKZm00k00k.png";
             }
 
             MoveTypeImg moveTypeImg = new MoveTypeImg();
@@ -671,7 +671,7 @@ namespace SysBot.Pokemon.Helpers
             movetypeurl4 = moveTypeImg.MoveTypeToChinese(type4);
 
             // pokeurl = PKImgURL(speciesint,pkform,shyint);
-            pokeurl = "https://img.imdodo.com/openapitest/upload/cdn/AEA3F842940BD2E6418AE36231F53BB7_1696061304099.png";
+            pokeurl = "https://img.kookapp.cn/attachments/2025-05/16/dtMlwYn6S903k03k.png";
            
             var key = (Species: speciesInt, Form: pkForm, Shiny: shinyInt);
           //  LogUtil.LogInfo($"KEY:{key}", nameof(PokemonTradeHelper<T>));
@@ -761,7 +761,7 @@ namespace SysBot.Pokemon.Helpers
                 {
                   //  LogUtil.LogInfo($"Tera: {tera} not found.", nameof(PokemonTradeHelper<T>));
 
-                    teraurl = "https://img.imdodo.com/openapitest/upload/cdn/AEA3F842940BD2E6418AE36231F53BB7_1696061304099.png";
+                    teraurl = "https://img.kookapp.cn/attachments/2025-05/16/jPrG2NK9KF01o01o.png";
                 }
                 try
                 {
@@ -772,7 +772,7 @@ namespace SysBot.Pokemon.Helpers
                 {
                     //  LogUtil.LogInfo($"Tera Original: {teraoriginal} not found.", nameof(PokemonTradeHelper<T>));
 
-                    teraoriginurl = "https://img.imdodo.com/openapitest/upload/cdn/AEA3F842940BD2E6418AE36231F53BB7_1696061304099.png";
+                    teraoriginurl = "https://img.kookapp.cn/attachments/2025-05/16/jPrG2NK9KF01o01o.png";
                 }
 
             }

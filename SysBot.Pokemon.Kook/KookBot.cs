@@ -229,6 +229,7 @@ namespace SysBot.Pokemon.Kook
 
         private static KMarkdownElementBuilder KMarkdown(string content) => new() { Content = content };
         private static ImageElementBuilder Image(string url) => new() { Source = url };
+        private static PlainTextElementBuilder PlainText(string content) => new() { Content = content };
 
         /// <summary>
         /// 交易卡片: 解析 PokemonTradeHelper.CardInfo 生成的文本(按行)
@@ -292,7 +293,7 @@ namespace SysBot.Pokemon.Kook
             // 底部图标行(闪光/球种/道具/太晶)
             var context = new ContextModuleBuilder();
             bool hasIcon = false;
-            if (IsValidImageUrl(shinyurl)) { context.AddElement(Image(shinyurl!)); hasIcon = true; }
+            if (!string.IsNullOrEmpty(shinyurl)) { context.AddElement(PlainText(shinyurl!)); hasIcon = true; }
             if (IsValidImageUrl(ballurl)) { context.AddElement(Image(ballurl!)); hasIcon = true; }
             if (IsValidImageUrl(itemurl)) { context.AddElement(Image(itemurl!)); hasIcon = true; }
             if (IsValidImageUrl(teraurl)) { context.AddElement(Image(teraurl!)); hasIcon = true; }
@@ -331,7 +332,7 @@ namespace SysBot.Pokemon.Kook
 
             var context = new ContextModuleBuilder();
             bool hasIcon = false;
-            if (IsValidImageUrl(shinyurl)) { context.AddElement(Image(shinyurl!)); hasIcon = true; }
+            if (!string.IsNullOrEmpty(shinyurl)) { context.AddElement(PlainText(shinyurl!)); hasIcon = true; }
             if (IsValidImageUrl(ballurl)) { context.AddElement(Image(ballurl!)); hasIcon = true; }
             if (hasIcon)
                 card.AddModule(context);
@@ -358,7 +359,7 @@ namespace SysBot.Pokemon.Kook
 
             var context = new ContextModuleBuilder();
             bool hasIcon = false;
-            if (IsValidImageUrl(shinyurl)) { context.AddElement(Image(shinyurl!)); hasIcon = true; }
+            if (!string.IsNullOrEmpty(shinyurl)) { context.AddElement(PlainText(shinyurl!)); hasIcon = true; }
             if (IsValidImageUrl(ballurl)) { context.AddElement(Image(ballurl!)); hasIcon = true; }
             if (IsValidImageUrl(itemurl)) { context.AddElement(Image(itemurl!)); hasIcon = true; }
             if (hasIcon)

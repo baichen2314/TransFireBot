@@ -493,7 +493,7 @@ namespace SysBot.Pokemon.Dodo
                                      new
                                     {
                                         type = "image",
-                                        src = "https://img.imdodo.com/openapitest/upload/cdn/E714716E359055F4AD802BD414A97AF2_1696061162810.png"
+                                        src = "https://img.kookapp.cn/attachments/2024-05/06/AIOJcopD4t03k03k.png"
                                     },
                                     new
                                     {
